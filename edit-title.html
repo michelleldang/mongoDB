@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Movie Title</title>
+
+</head>
+<body>
+  <label>Existing Movie Title:
+  <input type="text" id="title">
+  </label>
+  <label>
+    Movie's New Title: <input type="text" id="newTitle">
+  </label>
+  <button id="editButton">Edit Movie Title</button>
+  <script>
+    const domainName = "http://localhost:3000"
+    const editRoute = "/edit"
+
+    const inputTitle = document.getElementById("title")
+    const inputNewTitle = document.querySelector("#newTitle")
+    const buttonEdit = document.querySelector("#editButton")
+    // document.getElementById("title").value;
+
+    buttonEdit.addEventListener('click', async () => {
+      let result = await fetch(domainName + editRoute, {
+        method: "PUT",
+        body: JSON.stringify({
+          title: document.querySelector("#title").value,
+          newTitle: document.querySelector("#newTitle").value
+        }),
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      })
+    })
+  </script>
+</body>
+</html>

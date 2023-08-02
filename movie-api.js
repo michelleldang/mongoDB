@@ -9,6 +9,8 @@ const envInventory = `${process.env.dbCollectionName}`
 
 const app = express()
 app.use(cors())
+app.use(express.json())
+
 
 
 const uri = `mongodb+srv://${process.env.dbUserName}:${process.env.dbPassword}@${process.env.dbCluster}.${process.env.dbMongoId}.mongodb.net/${process.env.dbName}?retryWrites=true&w=majority`
@@ -166,6 +168,41 @@ app.route('/insert')
     }
     finally{
       await client.close();
+    }
+  })
+
+  app.route('/edit')
+    .put(async (req, res) => {
+      console.log(req.body.title)
+      console.log(req.body.newTitle)
+
+      let error = null;
+      let result = {}
+      try {
+        await client.connect();
+        const collection = client.db(envDB).collection(envInventory);
+
+        result = await collection.updateOne({
+          title: req.body.title
+        }, {
+          $set: {
+            title: req.body.newTitle
+          }
+        });
+        if (result.modifiedCount === 0) {
+          throw new Error("could not find record")
+        }
+    } catch(e) {
+      console.dir(e)
+      error = e;
+    }
+    finally{
+      await client.close();
+    }
+    if(error === null) {
+      res.sendStatus(200)
+    } else {
+      res.status(500).send("failure")
     }
   })
 app.listen(PORT, () => {
